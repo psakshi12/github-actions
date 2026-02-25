@@ -1,0 +1,47 @@
+name: Vite CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create .env file
+        run: |
+          echo "VITE_BASE_URL=${{secrets.VITE_BASE_URL}}" >> .env
+        
+      - name: Validate env
+        run: |
+          if [ -z "$VITE_BASE_URL"]; then
+            echo "VITE_BASE_URL is missing"
+            exit 1
+          else 
+            echo "Env injection OK"
+          fi
+        env:
+          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }} 
+
+      - name: Run Lint
+        run: npm run lint --if-present
+
+      - name: Run Tests
+        run: npm test --if-present
+
+      - name: Build Project
+        run: npm run build
