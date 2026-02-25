@@ -22,6 +22,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create .env file
+        run: |
+          echo "VITE_BASE_URL=${{secret.VITE_BASE_URL}}" >> .env
+
       - name: Run Lint
         run: npm run lint --if-present
 
