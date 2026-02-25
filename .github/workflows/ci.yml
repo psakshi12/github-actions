@@ -25,6 +25,17 @@ jobs:
       - name: Create .env file
         run: |
           echo "VITE_BASE_URL=${{secrets.VITE_BASE_URL}}" >> .env
+        
+      - name: Validate env
+        run: |
+          if [ -z "$VITE_BASE_URL"]; then
+            echo "VITE_BASE_URL is missing"
+            exit 1
+          else 
+            echo "Env injection OK"
+          fi
+        env:
+          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }} 
 
       - name: Run Lint
         run: npm run lint --if-present
